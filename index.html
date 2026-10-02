@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Urna Eletrônica | Simulação</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #cfcfcf;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .urna {
+            width: 1000px;
+            max-width: 100%;
+            background: #eee;
+            border: 8px solid #555;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .4);
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .titulo h1 {
+            font-size: 30px;
+            color: #222;
+        }
+
+        .titulo p {
+            margin-top: 5px;
+            color: #777;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .tela {
+            display: flex;
+            gap: 25px;
+            background: #dce8d2;
+            border: 5px solid #444;
+            min-height: 390px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .informacoes {
+            flex: 1;
+            border-right: 2px solid #777;
+            padding-right: 25px;
+        }
+
+        .informacoes h2 {
+            margin-bottom: 25px;
+            font-size: 21px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        .campo span {
+            display: inline-block;
+            width: 100px;
+            font-weight: bold;
+        }
+
+        .numero {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+            height: 50px;
+            padding: 5px 15px;
+            background: white;
+            border: 2px solid #222;
+            font-size: 27px;
+            letter-spacing: 9px;
+        }
+
+        .mensagem {
+            margin-top: 30px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .candidato {
+            flex: 1;
+            display: none;
+            text-align: center;
+        }
+
+        .candidato.ativo {
+            display: block;
+            animation: aparecer .25s ease;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: scale(.92);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .foto {
+            width: 170px;
+            height: 210px;
+            margin: 0 auto 15px;
+            border: 4px solid #333;
+            background: #ddd;
+            overflow: hidden;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, .3);
+        }
+
+        .foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .candidato h2 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .candidato p {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .painel {
+            background: #222;
+            padding: 22px;
+            border-radius: 10px;
+        }
+
+        .teclado {
+            max-width: 380px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .tecla {
+            height: 62px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px #000;
+            transition: .1s;
+        }
+
+        .tecla:hover {
+            background: #333;
+        }
+
+        .tecla:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 #000;
+        }
+
+        .branco {
+            background: white;
+            color: #111;
+            font-size: 15px;
+        }
+
+        .corrige {
+            background: #e69a00;
+            color: #111;
+            font-size: 15px;
+        }
+
+        .confirma {
+            background: #16852a;
+            font-size: 15px;
+        }
+
+        .resultado {
+            display: none;
+            margin-top: 20px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .resultado h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .barra {
+            margin: 15px 0;
+        }
+
+        .barra-topo {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .barra-fundo {
+            height: 25px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .barra-preenchida {
+            height: 100%;
+            width: 0%;
+            background: #555;
+            transition: width 1s;
+        }
+
+        .reiniciar {
+            display: block;
+            margin: 25px auto 0;
+            padding: 12px 25px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 750px) {
+
+            .tela {
+                flex-direction: column;
+            }
+
+            .informacoes {
+                border-right: none;
+                border-bottom: 2px solid #777;
+                padding-right: 0;
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="urna">
+
+        <div class="titulo">
+
+            <h1>🗳️ URNA ELETRÔNICA</h1>
+
+            <p>
+                SIMULAÇÃO FICTÍCIA • NÃO É UMA VOTAÇÃO OFICIAL
+            </p>
+
+        </div>
+
+        <div class="tela">
+
+            <div class="informacoes">
+
+                <h2>ELEIÇÃO SIMULADA</h2>
+
+                <div class="campo">
+
+                    <span>NÚMERO:</span>
+
+                    <div class="numero" id="numero">
+                        _ _
+                    </div>
+
+                </div>
+
+                <div class="campo">
+
+                    <span>NOME:</span>
+
+                    <strong id="nome">---</strong>
+
+                </div>
+
+                <div class="campo">
+
+                    <span>PARTIDO:</span>
+
+                    <strong id="partido">---</strong>
+
+                </div>
+
+                <div class="mensagem" id="mensagem">
+
+                    Digite o número do candidato.
+
+                </div>
+
+            </div>
+
+
+            <!-- TELA INICIAL -->
+
+            <div class="candidato ativo" id="candidatoInicial">
+
+                <div class="foto">
+
+                    <div style="
+                        width:100%;
+                        height:100%;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-size:70px;
+                    ">
+                        ?
+                    </div>
+
+                </div>
+
+                <h2>Escolha seu candidato</h2>
+
+                <p>
+                    Digite o número no teclado
+                </p>
+
+            </div>
+
+
+            <!-- LULA -->
+
+            <div class="candidato" id="candidato1">
+
+                <div class="foto">
+
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Foto_oficial_de_Luiz_In%C3%A1cio_Lula_da_Silva_%28ombros%29_denoise.jpg?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original"
+                        alt="Lula">
+
+                </div>
+
+                <h2>Lula</h2>
+
+                <p>Candidato 13</p>
+
+            </div>
+
+
+            <!-- FLÁVIO -->
+
+            <div class="candidato" id="candidato2">
+
+                <div class="foto">
+
+                    <img src="https://legis.senado.leg.br/senadores/fotos-oficiais/5894" alt="Flávio Bolsonaro">
+
+                </div>
+
+                <h2>Flávio Bolsonaro</h2>
+
+                <p>Candidato 22</p>
+
+            </div>
+
+
+            <!-- RENAN -->
+
+            <div class="candidato" id="candidato3">
+
+                <div class="foto">
+
+                    <img src="https://canalmynews.com.br/wp-content/uploads/2025/11/f9a292c9-imagem_2025-11-05_125931768.png "
+                        alt="Renan Santos">
+
+                </div>
+
+                <h2>Renan Santos</h2>
+
+                <p>Candidato 14</p>
+
+            </div>
+
+        </div>
+
+
+        <!-- TECLADO -->
+
+        <div class="painel">
+
+            <div class="teclado">
+
+                <button class="tecla" onclick="digitar(1)">1</button>
+                <button class="tecla" onclick="digitar(2)">2</button>
+                <button class="tecla" onclick="digitar(3)">3</button>
+
+                <button class="tecla" onclick="digitar(4)">4</button>
+                <button class="tecla" onclick="digitar(5)">5</button>
+                <button class="tecla" onclick="digitar(6)">6</button>
+
+                <button class="tecla" onclick="digitar(7)">7</button>
+                <button class="tecla" onclick="digitar(8)">8</button>
+                <button class="tecla" onclick="digitar(9)">9</button>
+
+                <button class="tecla"></button>
+
+                <button class="tecla" onclick="digitar(0)">0</button>
+
+                <button class="tecla"></button>
+
+                <button class="tecla branco" onclick="branco()">
+                    BRANCO
+                </button>
+
+                <button class="tecla corrige" onclick="corrigir()">
+                    CORRIGE
+                </button>
+
+                <button class="tecla confirma" onclick="confirmar()">
+                    CONFIRMA
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESULTADO -->
+
+        <div class="resultado" id="resultado">
+
+            <h2>📊 Resultado da simulação</h2>
+
+            <div class="barra">
+
+                <div class="barra-topo">
+                    <span>Lula</span>
+                    <strong id="votos1">0</strong>
+                </div>
+
+                <div class="barra-fundo">
+                    <div class="barra-preenchida" id="barra1"></div>
+                </div>
+
+            </div>
+
+
+            <div class="barra">
+
+                <div class="barra-topo">
+                    <span>Flávio Bolsonaro</span>
+                    <strong id="votos2">0</strong>
+                </div>
+
+                <div class="barra-fundo">
+                    <div class="barra-preenchida" id="barra2"></div>
+                </div>
+
+            </div>
+
+
+            <div class="barra">
+
+                <div class="barra-topo">
+                    <span>Renan Santos</span>
+                    <strong id="votos3">0</strong>
+                </div>
+
+                <div class="barra-fundo">
+                    <div class="barra-preenchida" id="barra3"></div>
+                </div>
+
+            </div>
+
+
+            <div class="barra">
+
+                <div class="barra-topo">
+                    <span>Brancos</span>
+                    <strong id="votosBrancos">0</strong>
+                </div>
+
+                <div class="barra-fundo">
+                    <div class="barra-preenchida" id="barraBrancos"></div>
+                </div>
+
+            </div>
+
+
+            <button class="reiniciar" onclick="reiniciar()">
+                NOVA SIMULAÇÃO
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        let numeroDigitado = "";
+
+        let votos = {
+            lula: 0,
+            flavio: 0,
+            renan: 0,
+            branco: 0
+        };
+
+
+        const candidatos = {
+
+            "13": {
+                nome: "Lula",
+                partido: "PT",
+                tela: "candidato1"
+            },
+
+            "22": {
+                nome: "Flávio Bolsonaro",
+                partido: "PL",
+                tela: "candidato2"
+            },
+
+            "14": {
+                nome: "Renan Santos",
+                partido: "MISSÃO",
+                tela: "candidato3"
+            }
+
+        };
+
+
+        /*
+        =====================================================
+        SISTEMA DE ÁUDIO
+        =====================================================
+        O som é criado diretamente pelo navegador.
+        Não precisa de MP3.
+        */
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const audioContext = new AudioContext();
+
+
+        function ativarAudio() {
+
+            if (audioContext.state === "suspended") {
+                audioContext.resume();
+            }
+
+        }
+
+
+        /*
+        BIP DAS TECLAS
+
+        Som curto e seco, com ataque rápido.
+        */
+
+        function somTecla() {
+
+            ativarAudio();
+
+            const agora = audioContext.currentTime;
+
+            const oscilador =
+                audioContext.createOscillator();
+
+            const ganho =
+                audioContext.createGain();
+
+
+            oscilador.type = "square";
+
+            oscilador.frequency.setValueAtTime(
+                820,
+                agora
+            );
+
+
+            ganho.gain.setValueAtTime(
+                0.0001,
+                agora
+            );
+
+            ganho.gain.exponentialRampToValueAtTime(
+                0.16,
+                agora + 0.008
+            );
+
+            ganho.gain.exponentialRampToValueAtTime(
+                0.0001,
+                agora + 0.105
+            );
+
+
+            oscilador.connect(ganho);
+
+            ganho.connect(
+                audioContext.destination
+            );
+
+
+            oscilador.start(agora);
+
+            oscilador.stop(
+                agora + 0.11
+            );
+
+        }
+
+
+        /*
+        SOM DE CONFIRMAÇÃO
+
+        Sequência de tons para dar sensação
+        de confirmação da operação.
+        */
+
+        function somConfirma() {
+
+            ativarAudio();
+
+            const agora =
+                audioContext.currentTime;
+
+
+            tocarTom(520, 0, 0.13);
+
+            tocarTom(620, 0.16, 0.16);
+
+            tocarTom(760, 0.35, 0.38);
+
+        }
+
+
+        function tocarTom(frequencia, atraso, duracao) {
+
+            const oscilador =
+                audioContext.createOscillator();
+
+            const ganho =
+                audioContext.createGain();
+
+
+            const inicio =
+                audioContext.currentTime + atraso;
+
+
+            oscilador.type = "square";
+
+
+            oscilador.frequency.setValueAtTime(
+                frequencia,
+                inicio
+            );
+
+
+            ganho.gain.setValueAtTime(
+                0.0001,
+                inicio
+            );
+
+
+            ganho.gain.exponentialRampToValueAtTime(
+                0.20,
+                inicio + 0.01
+            );
+
+
+            ganho.gain.exponentialRampToValueAtTime(
+                0.0001,
+                inicio + duracao
+            );
+
+
+            oscilador.connect(ganho);
+
+            ganho.connect(
+                audioContext.destination
+            );
+
+
+            oscilador.start(inicio);
+
+            oscilador.stop(
+                inicio + duracao + 0.02
+            );
+
+        }
+
+
+        /*
+        DIGITAR
+        */
+
+        function digitar(numero) {
+
+            somTecla();
+
+            if (numeroDigitado.length >= 2) {
+                return;
+            }
+
+
+            numeroDigitado += numero;
+
+            atualizarTela();
+
+
+            if (numeroDigitado.length === 2) {
+
+                mostrarCandidato();
+
+            }
+
+        }
+
+
+        /*
+        ATUALIZAR NÚMERO
+        */
+
+        function atualizarTela() {
+
+            let visual = "";
+
+            for (let i = 0; i < 2; i++) {
+
+                visual +=
+                    numeroDigitado[i] || "_";
+
+                if (i === 0) {
+                    visual += " ";
+                }
+
+            }
+
+
+            document.getElementById("numero")
+                .innerText = visual;
+
+        }
+
+
+        /*
+        MOSTRAR CANDIDATO
+        */
+
+        function mostrarCandidato() {
+
+            document
+                .querySelectorAll(".candidato")
+                .forEach(elemento => {
+
+                    elemento.classList.remove("ativo");
+
+                });
+
+
+            const candidato =
+                candidatos[numeroDigitado];
+
+
+            if (!candidato) {
+
+                document.getElementById("nome")
+                    .innerText = "NÚMERO INVÁLIDO";
+
+
+                document.getElementById("partido")
+                    .innerText = "---";
+
+
+                document.getElementById("mensagem")
+                    .innerText =
+                    "Número inválido. Aperte CORRIGE.";
+
+
+                document
+                    .getElementById("candidatoInicial")
+                    .classList.add("ativo");
+
+                return;
+
+            }
+
+
+            document.getElementById("nome")
+                .innerText = candidato.nome;
+
+
+            document.getElementById("partido")
+                .innerText = candidato.partido;
+
+
+            document.getElementById("mensagem")
+                .innerText =
+                "Confira os dados e aperte CONFIRMA.";
+
+
+            document
+                .getElementById(candidato.tela)
+                .classList.add("ativo");
+
+        }
+
+
+        /*
+        CORRIGIR
+        */
+
+        function corrigir() {
+
+            somTecla();
+
+            numeroDigitado = "";
+
+
+            document.getElementById("numero")
+                .innerText = "_ _";
+
+
+            document.getElementById("nome")
+                .innerText = "---";
+
+
+            document.getElementById("partido")
+                .innerText = "---";
+
+
+            document.getElementById("mensagem")
+                .innerText =
+                "Digite o número do candidato.";
+
+
+            document
+                .querySelectorAll(".candidato")
+                .forEach(elemento => {
+
+                    elemento.classList.remove("ativo");
+
+                });
+
+
+            document
+                .getElementById("candidatoInicial")
+                .classList.add("ativo");
+
+        }
+
+
+        /*
+        VOTO BRANCO
+        */
+
+        function branco() {
+
+            somTecla();
+
+            votos.branco++;
+
+            setTimeout(() => {
+
+                alert(
+                    "VOTO BRANCO REGISTRADO!"
+                );
+
+            }, 80);
+
+
+            corrigir();
+
+            atualizarResultados();
+
+        }
+
+
+        /*
+        CONFIRMAR
+        */
+
+        function confirmar() {
+
+            const candidato =
+                candidatos[numeroDigitado];
+
+
+            if (!candidato) {
+
+                somTecla();
+
+                alert(
+                    "Digite um número válido antes de confirmar."
+                );
+
+                return;
+
+            }
+
+
+            somConfirma();
+
+
+            if (numeroDigitado === "01") {
+                votos.lula++;
+            }
+
+
+            if (numeroDigitado === "02") {
+                votos.flavio++;
+            }
+
+
+            if (numeroDigitado === "03") {
+                votos.renan++;
+            }
+
+
+            setTimeout(() => {
+
+                alert(
+                    "VOTO REGISTRADO!"
+                );
+
+            }, 700);
+
+
+            setTimeout(() => {
+
+                corrigir();
+
+                atualizarResultados();
+
+            }, 750);
+
+        }
+
+
+        /*
+        RESULTADOS
+        */
+
+        function atualizarResultados() {
+
+            const total =
+                votos.lula +
+                votos.flavio +
+                votos.renan +
+                votos.branco;
+
+
+            if (total === 0) {
+                return;
+            }
+
+
+            document
+                .getElementById("resultado")
+                .style.display = "block";
+
+
+            document.getElementById("votos1")
+                .innerText = votos.lula;
+
+
+            document.getElementById("votos2")
+                .innerText = votos.flavio;
+
+
+            document.getElementById("votos3")
+                .innerText = votos.renan;
+
+
+            document.getElementById("votosBrancos")
+                .innerText = votos.branco;
+
+
+            document.getElementById("barra1")
+                .style.width =
+                (votos.lula / total * 100) + "%";
+
+
+            document.getElementById("barra2")
+                .style.width =
+                (votos.flavio / total * 100) + "%";
+
+
+            document.getElementById("barra3")
+                .style.width =
+                (votos.renan / total * 100) + "%";
+
+
+            document.getElementById("barraBrancos")
+                .style.width =
+                (votos.branco / total * 100) + "%";
+
+        }
+
+
+        /*
+        NOVA SIMULAÇÃO
+        */
+
+        function reiniciar() {
+
+            somTecla();
+
+
+            votos = {
+                lula: 0,
+                flavio: 0,
+                renan: 0,
+                branco: 0
+            };
+
+
+            document
+                .getElementById("resultado")
+                .style.display = "none";
+
+
+            document.getElementById("barra1")
+                .style.width = "0%";
+
+
+            document.getElementById("barra2")
+                .style.width = "0%";
+
+
+            document.getElementById("barra3")
+                .style.width = "0%";
+
+
+            document.getElementById("barraBrancos")
+                .style.width = "0%";
+
+
+            corrigir();
+
+        }
+
+
+        /*
+        TECLADO FÍSICO
+
+        Permite usar os números do teclado
+        do computador também.
+        */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key >= "0" &&
+                    event.key <= "9"
+                ) {
+
+                    digitar(
+                        Number(event.key)
+                    );
+
+                }
+
+
+                if (event.key === "Enter") {
+
+                    confirmar();
+
+                }
+
+
+                if (event.key === "Backspace") {
+
+                    corrigir();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
