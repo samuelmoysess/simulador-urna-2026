@@ -1,761 +1,785 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urna Digital 2026 | Simulação</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urna Digital 2026 | Simulação</title>
 
-<style>
-:root {
-    --fundo: #c9c9c9;
-    --urna: #eeeeee;
-    --tela: #dce8d2;
-    --preto: #171717;
-    --verde: #16852a;
-    --amarelo: #e69a00;
-}
+    <style>
+        :root {
+            --fundo: #c9c9c9;
+            --urna: #eeeeee;
+            --tela: #dce8d2;
+            --preto: #171717;
+            --verde: #16852a;
+            --amarelo: #e69a00;
+        }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-body {
-    min-height: 100vh;
-    padding: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--fundo);
-}
+        body {
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--fundo);
+        }
 
-.urna {
-    width: 1000px;
-    max-width: 100%;
-    padding: 24px;
-    border: 8px solid #555;
-    border-radius: 18px;
-    background: var(--urna);
-    box-shadow: 0 15px 40px #0005;
-}
+        .urna {
+            width: 1000px;
+            max-width: 100%;
+            padding: 24px;
+            border: 8px solid #555;
+            border-radius: 18px;
+            background: var(--urna);
+            box-shadow: 0 15px 40px #0005;
+        }
 
-.cabecalho {
-    text-align: center;
-    margin-bottom: 20px;
-}
+        .cabecalho {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-.cabecalho h1 {
-    font-size: clamp(23px, 4vw, 32px);
-    color: #222;
-}
+        .cabecalho h1 {
+            font-size: clamp(23px, 4vw, 32px);
+            color: #222;
+        }
 
-.cabecalho p {
-    margin-top: 8px;
-    color: #666;
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
+        .cabecalho p {
+            margin-top: 8px;
+            color: #666;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
 
-.tela {
-    display: grid;
-    grid-template-columns: 1fr 0.8fr;
-    gap: 24px;
-    min-height: 360px;
-    padding: 24px;
-    margin-bottom: 20px;
-    background: var(--tela);
-    border: 5px solid #444;
-}
+        .tela {
+            display: grid;
+            grid-template-columns: 1fr 0.8fr;
+            gap: 24px;
+            min-height: 360px;
+            padding: 24px;
+            margin-bottom: 20px;
+            background: var(--tela);
+            border: 5px solid #444;
+        }
 
-.informacoes {
-    padding-right: 20px;
-    border-right: 2px solid #888;
-}
+        .informacoes {
+            padding-right: 20px;
+            border-right: 2px solid #888;
+        }
 
-.informacoes h2 {
-    margin-bottom: 24px;
-    font-size: 21px;
-}
+        .informacoes h2 {
+            margin-bottom: 24px;
+            font-size: 21px;
+        }
 
-.campo {
-    margin-bottom: 19px;
-}
+        .campo {
+            margin-bottom: 19px;
+        }
 
-.campo span {
-    display: inline-block;
-    min-width: 100px;
-    font-weight: bold;
-}
+        .campo span {
+            display: inline-block;
+            min-width: 100px;
+            font-weight: bold;
+        }
 
-.numero {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 150px;
-    min-height: 48px;
-    padding: 8px 14px;
-    background: white;
-    border: 2px solid #222;
-    font-size: 28px;
-    letter-spacing: 9px;
-}
+        .numero {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 150px;
+            min-height: 48px;
+            padding: 8px 14px;
+            background: white;
+            border: 2px solid #222;
+            font-size: 28px;
+            letter-spacing: 9px;
+        }
 
-.mensagem {
-    margin-top: 28px;
-    font-weight: bold;
-    line-height: 1.6;
-}
+        .mensagem {
+            margin-top: 28px;
+            font-weight: bold;
+            line-height: 1.6;
+        }
 
-.candidato {
-    display: none;
-    text-align: center;
-    align-self: center;
-    animation: aparecer .2s ease;
-}
+        .candidato {
+            display: none;
+            text-align: center;
+            align-self: center;
+            animation: aparecer .2s ease;
+        }
 
-.candidato.ativo {
-    display: block;
-}
+        .candidato.ativo {
+            display: block;
+        }
 
-@keyframes aparecer {
-    from { opacity: 0; transform: scale(.95); }
-    to { opacity: 1; transform: scale(1); }
-}
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: scale(.95);
+            }
 
-.foto {
-    width: 155px;
-    height: 190px;
-    margin: 0 auto 14px;
-    border: 4px solid #333;
-    background: #ddd;
-    overflow: hidden;
-}
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
-.foto img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        .foto {
+            width: 155px;
+            height: 190px;
+            margin: 0 auto 14px;
+            border: 4px solid #333;
+            background: #ddd;
+            overflow: hidden;
+        }
 
-.candidato h2 {
-    margin-bottom: 8px;
-    font-size: 23px;
-}
+        .foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.candidato p {
-    color: #555;
-    font-weight: bold;
-}
+        .candidato h2 {
+            margin-bottom: 8px;
+            font-size: 23px;
+        }
 
-.inicial-icone {
-    display: grid;
-    height: 100%;
-    min-height: 180px;
-    place-items: center;
-    font-size: 80px;
-}
+        .candidato p {
+            color: #555;
+            font-weight: bold;
+        }
 
-.painel {
-    padding: 22px;
-    background: #222;
-    border-radius: 10px;
-}
+        .inicial-icone {
+            display: grid;
+            height: 100%;
+            min-height: 180px;
+            place-items: center;
+            font-size: 80px;
+        }
 
-.teclado {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 11px;
-    max-width: 390px;
-    margin: auto;
-}
+        .painel {
+            padding: 22px;
+            background: #222;
+            border-radius: 10px;
+        }
 
-.tecla {
-    min-height: 60px;
-    border: none;
-    border-radius: 5px;
-    background: #101010;
-    color: white;
-    font-size: 25px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px #000;
-    transition: transform .08s, background .1s;
-}
+        .teclado {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 11px;
+            max-width: 390px;
+            margin: auto;
+        }
 
-.tecla:hover {
-    background: #444;
-}
+        .tecla {
+            min-height: 60px;
+            border: none;
+            border-radius: 5px;
+            background: #101010;
+            color: white;
+            font-size: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px #000;
+            transition: transform .08s, background .1s;
+        }
 
-.tecla:active {
-    transform: translateY(4px);
-    box-shadow: none;
-}
+        .tecla:hover {
+            background: #444;
+        }
 
-.branco {
-    background: white;
-    color: #111;
-    font-size: 14px;
-}
+        .tecla:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
 
-.corrige {
-    background: var(--amarelo);
-    color: #111;
-    font-size: 14px;
-}
+        .branco {
+            background: white;
+            color: #111;
+            font-size: 14px;
+        }
 
-.confirma {
-    background: var(--verde);
-    font-size: 14px;
-}
+        .corrige {
+            background: var(--amarelo);
+            color: #111;
+            font-size: 14px;
+        }
 
-.branco:hover { background: #ddd; }
-.corrige:hover { background: #ffc247; }
-.confirma:hover { background: #20a83a; }
+        .confirma {
+            background: var(--verde);
+            font-size: 14px;
+        }
 
-.resultado {
-    display: none;
-    margin-top: 20px;
-    padding: 24px;
-    border: 3px solid #333;
-    border-radius: 10px;
-    background: white;
-}
+        .branco:hover {
+            background: #ddd;
+        }
 
-.resultado h2 {
-    margin-bottom: 10px;
-    text-align: center;
-}
+        .corrige:hover {
+            background: #ffc247;
+        }
 
-.aviso {
-    margin-bottom: 20px;
-    color: #666;
-    font-size: 13px;
-    text-align: center;
-}
+        .confirma:hover {
+            background: #20a83a;
+        }
 
-.barra {
-    margin: 17px 0;
-}
+        .resultado {
+            display: none;
+            margin-top: 20px;
+            padding: 24px;
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: white;
+        }
 
-.barra-topo {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 6px;
-}
+        .resultado h2 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
-.barra-fundo {
-    height: 23px;
-    overflow: hidden;
-    border-radius: 5px;
-    background: #ddd;
-}
+        .aviso {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 13px;
+            text-align: center;
+        }
 
-.barra-preenchida {
-    width: 0;
-    height: 100%;
-    background: #555;
-    transition: width .7s ease;
-}
+        .barra {
+            margin: 17px 0;
+        }
 
-.total {
-    margin-top: 20px;
-    text-align: center;
-    font-weight: bold;
-}
+        .barra-topo {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
 
-.reiniciar {
-    display: block;
-    margin: 24px auto 0;
-    padding: 13px 24px;
-    border: none;
-    border-radius: 6px;
-    background: #222;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .barra-fundo {
+            height: 23px;
+            overflow: hidden;
+            border-radius: 5px;
+            background: #ddd;
+        }
 
-.reiniciar:hover {
-    background: #444;
-}
+        .barra-preenchida {
+            width: 0;
+            height: 100%;
+            background: #555;
+            transition: width .7s ease;
+        }
 
-@media (max-width: 700px) {
-    body { padding: 10px; }
+        .total {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
 
-    .urna {
-        padding: 12px;
-        border-width: 5px;
-    }
+        .reiniciar {
+            display: block;
+            margin: 24px auto 0;
+            padding: 13px 24px;
+            border: none;
+            border-radius: 6px;
+            background: #222;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-    .tela {
-        grid-template-columns: 1fr;
-        padding: 16px;
-    }
+        .reiniciar:hover {
+            background: #444;
+        }
 
-    .informacoes {
-        padding: 0 0 18px;
-        border-right: none;
-        border-bottom: 2px solid #888;
-    }
+        @media (max-width: 700px) {
+            body {
+                padding: 10px;
+            }
 
-    .campo span {
-        min-width: 85px;
-    }
+            .urna {
+                padding: 12px;
+                border-width: 5px;
+            }
 
-    .numero {
-        min-width: 115px;
-        letter-spacing: 6px;
-    }
+            .tela {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
 
-    .painel { padding: 14px; }
+            .informacoes {
+                padding: 0 0 18px;
+                border-right: none;
+                border-bottom: 2px solid #888;
+            }
 
-    .tecla { min-height: 54px; }
-}
-</style>
+            .campo span {
+                min-width: 85px;
+            }
+
+            .numero {
+                min-width: 115px;
+                letter-spacing: 6px;
+            }
+
+            .painel {
+                padding: 14px;
+            }
+
+            .tecla {
+                min-height: 54px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<div class="urna">
+    <div class="urna">
 
-    <header class="cabecalho">
-        <h1>🗳️ URNA DIGITAL 2026</h1>
-        <p>SIMULAÇÃO FICTÍCIA • NÃO É UMA VOTAÇÃO OFICIAL</p>
-    </header>
+        <header class="cabecalho">
+            <h1>URNA DIGITAL 2026</h1>
+        </header>
 
-    <main>
-        <section class="tela">
-            <div class="informacoes">
-                <h2>ELEIÇÃO SIMULADA</h2>
+        <main>
 
-                <div class="campo">
-                    <span>NÚMERO:</span>
-                    <div class="numero" id="numero">_ _</div>
+            <section class="tela">
+                <div class="informacoes">
+                    <h2>ELEIÇÃO SIMULADA</h2>
+
+                    <div class="campo">
+                        <span>NÚMERO:</span>
+                        <div class="numero" id="numero">_ _</div>
+                    </div>
+
+                    <div class="campo">
+                        <span>NOME:</span>
+                        <strong id="nome">---</strong>
+                    </div>
+
+                    <div class="campo">
+                        <span>PARTIDO:</span>
+                        <strong id="partido">---</strong>
+                    </div>
+
+                    <div class="mensagem" id="mensagem" aria-live="polite">
+                        Digite o número do candidato.
+                    </div>
                 </div>
 
-                <div class="campo">
-                    <span>NOME:</span>
-                    <strong id="nome">---</strong>
+                <div class="candidato ativo" id="candidatoInicial">
+                    <div class="foto">
+                        <div class="inicial-icone">🗳️</div>
+                    </div>
+                    <h2>Escolha seu candidato</h2>
+                    <p>Digite o número no teclado</p>
                 </div>
 
-                <div class="campo">
-                    <span>PARTIDO:</span>
-                    <strong id="partido">---</strong>
+                <div class="candidato" id="candidato1">
+                    <div class="foto">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Foto_oficial_de_Luiz_In%C3%A1cio_Lula_da_Silva_%28ombros%29_denoise.jpg"
+                            alt="Lula" onerror="this.style.display='none'">
+                    </div>
+                    <h2>Lula</h2>
+                    <p>Número 13</p>
                 </div>
 
-                <div class="mensagem" id="mensagem" aria-live="polite">
-                    Digite o número do candidato.
+                <div class="candidato" id="candidato2">
+                    <div class="foto">
+                        <img src="https://legis.senado.leg.br/senadores/fotos-oficiais/5894" alt="Flávio Bolsonaro"
+                            onerror="this.style.display='none'">
+                    </div>
+                    <h2>Flávio Bolsonaro</h2>
+                    <p>Número 22</p>
                 </div>
-            </div>
 
-            <div class="candidato ativo" id="candidatoInicial">
-                <div class="foto">
-                    <div class="inicial-icone">🗳️</div>
+                <div class="candidato" id="candidato3">
+                    <div class="foto">
+                        <img src="https://canalmynews.com.br/wp-content/uploads/2025/11/f9a292c9-imagem_2025-11-05_125931768.png"
+                            alt="Renan Santos" onerror="this.style.display='none'">
+                    </div>
+                    <h2>Renan Santos</h2>
+                    <p>Número 14</p>
                 </div>
-                <h2>Escolha seu candidato</h2>
-                <p>Digite o número no teclado</p>
-            </div>
 
-            <div class="candidato" id="candidato1">
-                <div class="foto">
-                    <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Foto_oficial_de_Luiz_In%C3%A1cio_Lula_da_Silva_%28ombros%29_denoise.jpg"
-                        alt="Lula"
-                        onerror="this.style.display='none'">
+                <div class="candidato" id="candidato4">
+                    <div class="foto">
+                        <img src="img/Ruan.png" alt="Ruan Souza" onerror="this.style.display='none'">
+                    </div>
+                    <h2>Ruan Souza</h2>
+                    <p>Número 67</p>
                 </div>
-                <h2>Lula</h2>
-                <p>Número 13</p>
-            </div>
+            </section>
 
-            <div class="candidato" id="candidato2">
-                <div class="foto">
-                    <img
-                        src="https://legis.senado.leg.br/senadores/fotos-oficiais/5894"
-                        alt="Flávio Bolsonaro"
-                        onerror="this.style.display='none'">
+            <section class="painel" aria-label="Teclado da urna">
+                <div class="teclado">
+                    <button class="tecla" onclick="digitar(1)">1</button>
+                    <button class="tecla" onclick="digitar(2)">2</button>
+                    <button class="tecla" onclick="digitar(3)">3</button>
+
+                    <button class="tecla" onclick="digitar(4)">4</button>
+                    <button class="tecla" onclick="digitar(5)">5</button>
+                    <button class="tecla" onclick="digitar(6)">6</button>
+
+                    <button class="tecla" onclick="digitar(7)">7</button>
+                    <button class="tecla" onclick="digitar(8)">8</button>
+                    <button class="tecla" onclick="digitar(9)">9</button>
+
+                    <button class="tecla" disabled aria-label="Tecla vazia" style="opacity:.3;cursor:default"> </button>
+                    <button class="tecla" onclick="digitar(0)">0</button>
+                    <button class="tecla" disabled aria-label="Tecla vazia" style="opacity:.3;cursor:default"> </button>
+
+                    <button class="tecla branco" onclick="branco()">BRANCO</button>
+                    <button class="tecla corrige" onclick="corrigir()">CORRIGE</button>
+                    <button class="tecla confirma" onclick="confirmar()">CONFIRMA</button>
                 </div>
-                <h2>Flávio Bolsonaro</h2>
-                <p>Número 22</p>
-            </div>
-
-            <div class="candidato" id="candidato3">
-                <div class="foto">
-                    <img
-                        src="https://canalmynews.com.br/wp-content/uploads/2025/11/f9a292c9-imagem_2025-11-05_125931768.png"
-                        alt="Renan Santos"
-                        onerror="this.style.display='none'">
-                </div>
-                <h2>Renan Santos</h2>
-                <p>Número 14</p>
-            </div>
-
-            <div class="candidato" id="candidato4">
-                <div class="foto">
-                    <img src="img/Ruan.png"
-                         alt="Ruan Souza"
-                         onerror="this.style.display='none'">
-                </div>
-                <h2>Ruan Souza</h2>
-                <p>Número 67</p>
-            </div>
-        </section>
-
-        <section class="painel" aria-label="Teclado da urna">
-            <div class="teclado">
-                <button class="tecla" onclick="digitar(1)">1</button>
-                <button class="tecla" onclick="digitar(2)">2</button>
-                <button class="tecla" onclick="digitar(3)">3</button>
-
-                <button class="tecla" onclick="digitar(4)">4</button>
-                <button class="tecla" onclick="digitar(5)">5</button>
-                <button class="tecla" onclick="digitar(6)">6</button>
-
-                <button class="tecla" onclick="digitar(7)">7</button>
-                <button class="tecla" onclick="digitar(8)">8</button>
-                <button class="tecla" onclick="digitar(9)">9</button>
-
-                <button class="tecla" disabled aria-label="Tecla vazia"
-                        style="opacity:.3;cursor:default"> </button>
-                <button class="tecla" onclick="digitar(0)">0</button>
-                <button class="tecla" disabled aria-label="Tecla vazia"
-                        style="opacity:.3;cursor:default"> </button>
-
-                <button class="tecla branco" onclick="branco()">BRANCO</button>
-                <button class="tecla corrige" onclick="corrigir()">CORRIGE</button>
-                <button class="tecla confirma" onclick="confirmar()">CONFIRMA</button>
-            </div>
-        </section>
-
-
-<script>
-"use strict";
-
-let numeroDigitado = "";
-let votoRegistrado = false;
-
-let votos = {
-    lula: 0,
-    flavio: 0,
-    renan: 0,
-    ruan: 0,
-    branco: 0,
-    nulo: 0
-};
-
-const candidatos = {
-    "13": {
-        nome: "Lula",
-        partido: "PT",
-        tela: "candidato1",
-        voto: "lula"
-    },
-    "22": {
-        nome: "Flávio Bolsonaro",
-        partido: "PL",
-        tela: "candidato2",
-        voto: "flavio"
-    },
-    "14": {
-        nome: "Renan Santos",
-        partido: "MISSÃO",
-        tela: "candidato3",
-        voto: "renan"
-    },
-    "67": {
-        nome: "Ruan Souza",
-        partido: "GORDURA",
-        tela: "candidato4",
-        voto: "ruan"
-    }
-};
-
-/* Áudio eletrônico gerado pelo navegador */
-let audioContext = null;
-
-function ativarAudio() {
-    const AudioAPI = window.AudioContext || window.webkitAudioContext;
-
-    if (!AudioAPI) return false;
-
-    if (!audioContext) {
-        audioContext = new AudioAPI();
-    }
-
-    if (audioContext.state === "suspended") {
-        audioContext.resume();
-    }
-
-    return true;
-}
-
-function tocarTom(frequencia, atraso = 0, duracao = 0.09, volume = 0.12) {
-    if (!ativarAudio()) return;
-
-    const inicio = audioContext.currentTime + atraso;
-    const oscilador = audioContext.createOscillator();
-    const ganho = audioContext.createGain();
-
-    oscilador.type = "square";
-    oscilador.frequency.setValueAtTime(frequencia, inicio);
-
-    ganho.gain.setValueAtTime(0.0001, inicio);
-    ganho.gain.exponentialRampToValueAtTime(volume, inicio + 0.008);
-    ganho.gain.setValueAtTime(volume, inicio + Math.max(0.012, duracao - 0.018));
-    ganho.gain.exponentialRampToValueAtTime(0.0001, inicio + duracao);
-
-    oscilador.connect(ganho);
-    ganho.connect(audioContext.destination);
-
-    oscilador.start(inicio);
-    oscilador.stop(inicio + duracao + 0.01);
-}
-
-function somTecla() {
-    tocarTom(820, 0, 0.075, 0.09);
-}
-
-function somConfirma() {
-    // Sequência retrô que acelera no final.
-    const notas = [
-        [520, 0.00, 0.12],
-        [620, 0.16, 0.12],
-        [740, 0.32, 0.12],
-        [880, 0.48, 0.10],
-        [988, 0.61, 0.075],
-        [1175, 0.71, 0.065],
-        [1397, 0.79, 0.055],
-        [1568, 0.86, 0.05],
-        [1760, 0.93, 0.25]
-    ];
-
-    notas.forEach(([freq, atraso, duracao]) => {
-        tocarTom(freq, atraso, duracao, 0.15);
-    });
-}
-
-function somErro() {
-    tocarTom(300, 0, 0.14, 0.1);
-    tocarTom(220, 0.16, 0.2, 0.1);
-}
-
-function atualizarNumero() {
-    const visual = (numeroDigitado + "_ _").slice(0, 3);
-    document.getElementById("numero").textContent =
-        numeroDigitado.length === 0 ? "_ _" :
-        numeroDigitado.length === 1 ? numeroDigitado + " _" :
-        numeroDigitado;
-}
-
-function mostrarTela(id) {
-    document.querySelectorAll(".candidato").forEach(elemento => {
-        elemento.classList.remove("ativo");
-    });
-
-    document.getElementById(id).classList.add("ativo");
-}
-
-function digitar(numero) {
-    if (votoRegistrado || numeroDigitado.length >= 2) return;
-
-    somTecla();
-    numeroDigitado += String(numero);
-    atualizarNumero();
-
-    if (numeroDigitado.length === 2) {
-        mostrarCandidato();
-    } else {
-        document.getElementById("mensagem").textContent =
-            "Digite o segundo número.";
-    }
-}
-
-function mostrarCandidato() {
-    const candidato = candidatos[numeroDigitado];
-
-    if (!candidato) {
-        mostrarTela("candidatoInicial");
-
-        document.getElementById("nome").textContent = "NÚMERO INVÁLIDO";
-        document.getElementById("partido").textContent = "---";
-        document.getElementById("mensagem").textContent =
-            "Número inválido. Aperte CORRIGE para tentar novamente.";
-        return;
-    }
-
-    document.getElementById("nome").textContent = candidato.nome;
-    document.getElementById("partido").textContent = candidato.partido;
-    document.getElementById("mensagem").textContent =
-        "Confira os dados e aperte CONFIRMA.";
-
-    mostrarTela(candidato.tela);
-}
-
-function limparVoto() {
-    numeroDigitado = "";
-    votoRegistrado = false;
-
-    atualizarNumero();
-
-    document.getElementById("nome").textContent = "---";
-    document.getElementById("partido").textContent = "---";
-    document.getElementById("mensagem").textContent =
-        "Digite o número do candidato.";
-
-    mostrarTela("candidatoInicial");
-}
-
-function corrigir() {
-    if (votoRegistrado) return;
-
-    somTecla();
-    limparVoto();
-}
-
-function registrarVoto(tipo) {
-    votos[tipo]++;
-    votoRegistrado = true;
-
-    document.getElementById("mensagem").textContent =
-        "VOTO REGISTRADO! Aguarde...";
-
-    document.getElementById("resultado").style.display = "block";
-    atualizarResultados();
-
-    setTimeout(() => {
-        limparVoto();
-    }, 1200);
-}
-
-function branco() {
-    if (votoRegistrado) return;
-
-    somConfirma();
-
-    document.getElementById("nome").textContent = "VOTO BRANCO";
-    document.getElementById("partido").textContent = "---";
-    document.getElementById("mensagem").textContent =
-        "Confirme para registrar o voto em branco.";
-
-    numeroDigitado = "";
-    atualizarNumero();
-    mostrarTela("candidatoInicial");
-
-    // A confirmação do voto branco é feita pelo botão CONFIRMA.
-    window.votoBrancoPendente = true;
-}
-
-function confirmar() {
-    if (votoRegistrado) return;
-
-    if (window.votoBrancoPendente) {
-        window.votoBrancoPendente = false;
-        somConfirma();
-        registrarVoto("branco");
-        return;
-    }
-
-    const candidato = candidatos[numeroDigitado];
-
-    if (!candidato) {
-        somErro();
-        document.getElementById("mensagem").textContent =
-            "Digite um número válido antes de confirmar.";
-        return;
-    }
-
-    somConfirma();
-    registrarVoto(candidato.voto);
-}
-
-function atualizarResultados() {
-    const nomes = {
-        lula: "Lula",
-        flavio: "Flávio Bolsonaro",
-        renan: "Renan Santos",
-        ruan: "Ruan Souza",
-        branco: "Votos em branco",
-        nulo: "Votos nulos"
-    };
-
-    const total = Object.values(votos).reduce((soma, valor) => soma + valor, 0);
-    const container = document.getElementById("barras");
-
-    container.innerHTML = "";
-
-    Object.entries(votos).forEach(([chave, quantidade]) => {
-        const percentual = total ? (quantidade / total) * 100 : 0;
-
-        const linha = document.createElement("div");
-        linha.className = "barra";
-
-        const topo = document.createElement("div");
-        topo.className = "barra-topo";
-
-        const nome = document.createElement("span");
-        nome.textContent = nomes[chave];
-
-        const valor = document.createElement("strong");
-        valor.textContent = `${quantidade} (${percentual.toFixed(1)}%)`;
-
-        topo.append(nome, valor);
-
-        const fundo = document.createElement("div");
-        fundo.className = "barra-fundo";
-
-        const preenchida = document.createElement("div");
-        preenchida.className = "barra-preenchida";
-        preenchida.style.width = `${percentual}%`;
-
-        fundo.appendChild(preenchida);
-        linha.append(topo, fundo);
-        container.appendChild(linha);
-    });
-
-    document.getElementById("totalVotos").textContent =
-        `Total de votos: ${total}`;
-}
-
-function reiniciar() {
-    somTecla();
-
-    votos = {
-        lula: 0,
-        flavio: 0,
-        renan: 0,
-        ruan: 0,
-        branco: 0,
-        nulo: 0
-    };
-
-    window.votoBrancoPendente = false;
-
-    document.getElementById("resultado").style.display = "none";
-    limparVoto();
-    atualizarResultados();
-}
-
-/* Teclado físico do computador */
-document.addEventListener("keydown", event => {
-    if (event.repeat) return;
-
-    if (event.key >= "0" && event.key <= "9") {
-        digitar(Number(event.key));
-    }
-
-    if (event.key === "Enter") {
-        confirmar();
-    }
-
-    if (event.key === "Backspace" || event.key === "Escape") {
-        corrigir();
-    }
-});
-
-atualizarResultados();
-</script>
+            </section>
+
+
+            <script>
+                "use strict";
+
+                let numeroDigitado = "";
+                let votoRegistrado = false;
+
+                let votos = {
+                    lula: 0,
+                    flavio: 0,
+                    renan: 0,
+                    ruan: 0,
+                    branco: 0,
+                    nulo: 0
+                };
+
+                const candidatos = {
+                    "13": {
+                        nome: "Lula",
+                        partido: "PT",
+                        tela: "candidato1",
+                        voto: "lula"
+                    },
+                    "22": {
+                        nome: "Flávio Bolsonaro",
+                        partido: "PL",
+                        tela: "candidato2",
+                        voto: "flavio"
+                    },
+                    "14": {
+                        nome: "Renan Santos",
+                        partido: "MISSÃO",
+                        tela: "candidato3",
+                        voto: "renan"
+                    },
+                    "67": {
+                        nome: "Ruan Souza",
+                        partido: "GORDURA",
+                        tela: "candidato4",
+                        voto: "ruan"
+                    }
+                };
+
+                /* Áudio eletrônico gerado pelo navegador */
+                let audioContext = null;
+
+                function ativarAudio() {
+                    const AudioAPI = window.AudioContext || window.webkitAudioContext;
+
+                    if (!AudioAPI) return false;
+
+                    if (!audioContext) {
+                        audioContext = new AudioAPI();
+                    }
+
+                    if (audioContext.state === "suspended") {
+                        audioContext.resume();
+                    }
+
+                    return true;
+                }
+
+                function tocarTom(frequencia, atraso = 0, duracao = 0.09, volume = 0.12) {
+                    if (!ativarAudio()) return;
+
+                    const inicio = audioContext.currentTime + atraso;
+                    const oscilador = audioContext.createOscillator();
+                    const ganho = audioContext.createGain();
+
+                    oscilador.type = "square";
+                    oscilador.frequency.setValueAtTime(frequencia, inicio);
+
+                    ganho.gain.setValueAtTime(0.0001, inicio);
+                    ganho.gain.exponentialRampToValueAtTime(volume, inicio + 0.008);
+                    ganho.gain.setValueAtTime(volume, inicio + Math.max(0.012, duracao - 0.018));
+                    ganho.gain.exponentialRampToValueAtTime(0.0001, inicio + duracao);
+
+                    oscilador.connect(ganho);
+                    ganho.connect(audioContext.destination);
+
+                    oscilador.start(inicio);
+                    oscilador.stop(inicio + duracao + 0.01);
+                }
+
+                function somTecla() {
+                    tocarTom(820, 0, 0.075, 0.09);
+                }
+
+                function somConfirma() {
+                    // Sequência retrô que acelera no final.
+                    const notas = [
+                        [520, 0.00, 0.12],
+                        [620, 0.16, 0.12],
+                        [740, 0.32, 0.12],
+                        [880, 0.48, 0.10],
+                        [988, 0.61, 0.075],
+                        [1175, 0.71, 0.065],
+                        [1397, 0.79, 0.055],
+                        [1568, 0.86, 0.05],
+                        [1760, 0.93, 0.25]
+                    ];
+
+                    notas.forEach(([freq, atraso, duracao]) => {
+                        tocarTom(freq, atraso, duracao, 0.15);
+                    });
+                }
+
+                function somErro() {
+                    tocarTom(300, 0, 0.14, 0.1);
+                    tocarTom(220, 0.16, 0.2, 0.1);
+                }
+
+                function atualizarNumero() {
+                    const visual = (numeroDigitado + "_ _").slice(0, 3);
+                    document.getElementById("numero").textContent =
+                        numeroDigitado.length === 0 ? "_ _" :
+                            numeroDigitado.length === 1 ? numeroDigitado + " _" :
+                                numeroDigitado;
+                }
+
+                function mostrarTela(id) {
+                    document.querySelectorAll(".candidato").forEach(elemento => {
+                        elemento.classList.remove("ativo");
+                    });
+
+                    document.getElementById(id).classList.add("ativo");
+                }
+
+                function digitar(numero) {
+                    if (votoRegistrado || numeroDigitado.length >= 2) return;
+
+                    somTecla();
+                    numeroDigitado += String(numero);
+                    atualizarNumero();
+
+                    if (numeroDigitado.length === 2) {
+                        mostrarCandidato();
+                    } else {
+                        document.getElementById("mensagem").textContent =
+                            "Digite o segundo número.";
+                    }
+                }
+
+                function mostrarCandidato() {
+                    const candidato = candidatos[numeroDigitado];
+
+                    if (!candidato) {
+                        mostrarTela("candidatoInicial");
+
+                        document.getElementById("nome").textContent = "NÚMERO INVÁLIDO";
+                        document.getElementById("partido").textContent = "---";
+                        document.getElementById("mensagem").textContent =
+                            "Número inválido. Aperte CORRIGE para tentar novamente.";
+                        return;
+                    }
+
+                    document.getElementById("nome").textContent = candidato.nome;
+                    document.getElementById("partido").textContent = candidato.partido;
+                    document.getElementById("mensagem").textContent =
+                        "Confira os dados e aperte CONFIRMA.";
+
+                    mostrarTela(candidato.tela);
+                }
+
+                function limparVoto() {
+                    numeroDigitado = "";
+                    votoRegistrado = false;
+
+                    atualizarNumero();
+
+                    document.getElementById("nome").textContent = "---";
+                    document.getElementById("partido").textContent = "---";
+                    document.getElementById("mensagem").textContent =
+                        "Digite o número do candidato.";
+
+                    mostrarTela("candidatoInicial");
+                }
+
+                function corrigir() {
+                    if (votoRegistrado) return;
+
+                    somTecla();
+                    limparVoto();
+                }
+
+                function registrarVoto(tipo) {
+                    votos[tipo]++;
+                    votoRegistrado = true;
+
+                    document.getElementById("mensagem").textContent =
+                        "VOTO REGISTRADO! Aguarde...";
+
+                    document.getElementById("resultado").style.display = "block";
+                    atualizarResultados();
+
+                    setTimeout(() => {
+                        limparVoto();
+                    }, 1200);
+                }
+
+                function branco() {
+                    if (votoRegistrado) return;
+
+                    somConfirma();
+
+                    document.getElementById("nome").textContent = "VOTO BRANCO";
+                    document.getElementById("partido").textContent = "---";
+                    document.getElementById("mensagem").textContent =
+                        "Confirme para registrar o voto em branco.";
+
+                    numeroDigitado = "";
+                    atualizarNumero();
+                    mostrarTela("candidatoInicial");
+
+                    // A confirmação do voto branco é feita pelo botão CONFIRMA.
+                    window.votoBrancoPendente = true;
+                }
+
+                function confirmar() {
+                    if (votoRegistrado) return;
+
+                    if (window.votoBrancoPendente) {
+                        window.votoBrancoPendente = false;
+                        somConfirma();
+                        registrarVoto("branco");
+                        return;
+                    }
+
+                    const candidato = candidatos[numeroDigitado];
+
+                    if (!candidato) {
+                        somErro();
+                        document.getElementById("mensagem").textContent =
+                            "Digite um número válido antes de confirmar.";
+                        return;
+                    }
+
+                    somConfirma();
+                    registrarVoto(candidato.voto);
+
+                    function registrarVoto(tipo) {
+                        votos[tipo]++;
+                        votoRegistrado = true;
+
+                        document.getElementById("mensagem").textContent =
+                            "VOTO REGISTRADO!";
+
+                        setTimeout(() => {
+                            limparVoto();
+                        }, 1200);
+                    }
+                }
+
+                function atualizarResultados() {
+                    const nomes = {
+                        lula: "Lula",
+                        flavio: "Flávio Bolsonaro",
+                        renan: "Renan Santos",
+                        ruan: "Ruan Souza",
+                        branco: "Votos em branco",
+                        nulo: "Votos nulos"
+                    };
+
+                    const total = Object.values(votos).reduce((soma, valor) => soma + valor, 0);
+                    const container = document.getElementById("barras");
+
+                    container.innerHTML = "";
+
+                    Object.entries(votos).forEach(([chave, quantidade]) => {
+                        const percentual = total ? (quantidade / total) * 100 : 0;
+
+                        const linha = document.createElement("div");
+                        linha.className = "barra";
+
+                        const topo = document.createElement("div");
+                        topo.className = "barra-topo";
+
+                        const nome = document.createElement("span");
+                        nome.textContent = nomes[chave];
+
+                        const valor = document.createElement("strong");
+                        valor.textContent = `${quantidade} (${percentual.toFixed(1)}%)`;
+
+                        topo.append(nome, valor);
+
+                        const fundo = document.createElement("div");
+                        fundo.className = "barra-fundo";
+
+                        const preenchida = document.createElement("div");
+                        preenchida.className = "barra-preenchida";
+                        preenchida.style.width = `${percentual}%`;
+
+                        fundo.appendChild(preenchida);
+                        linha.append(topo, fundo);
+                        container.appendChild(linha);
+                    });
+
+                    document.getElementById("totalVotos").textContent =
+                        `Total de votos: ${total}`;
+                }
+
+                function reiniciar() {
+                    somTecla();
+
+                    votos = {
+                        lula: 0,
+                        flavio: 0,
+                        renan: 0,
+                        ruan: 0,
+                        branco: 0,
+                        nulo: 0
+                    };
+
+                    window.votoBrancoPendente = false;
+
+                    document.getElementById("resultado").style.display = "none";
+                    limparVoto();
+                    atualizarResultados();
+                }
+
+                /* Teclado físico do computador */
+                document.addEventListener("keydown", event => {
+                    if (event.repeat) return;
+
+                    if (event.key >= "0" && event.key <= "9") {
+                        digitar(Number(event.key));
+                    }
+
+                    if (event.key === "Enter") {
+                        confirmar();
+                    }
+
+                    if (event.key === "Backspace" || event.key === "Escape") {
+                        corrigir();
+                    }
+                });
+
+                atualizarResultados();
+            </script>
 </body>
+
 </html>
